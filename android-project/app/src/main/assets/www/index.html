@@ -6,26 +6,24 @@
 <title>수거안내</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet"/>
 <style>
-  :root {
-    --blue:#1a56db; --blue-dark:#1e429f; --blue-light:#e8f0fe;
-    --green:#057a55; --green-light:#def7ec;
-    --amber:#b45309; --amber-light:#fef3c7;
-    --red:#c81e1e; --red-light:#fde8e8;
-    --g50:#f9fafb; --g100:#f3f4f6; --g200:#e5e7eb;
-    --g400:#9ca3af; --g600:#4b5563; --g900:#111827;
-    --r:16px; --rsm:10px; --shadow:0 2px 12px rgba(0,0,0,0.08);
-  }
+  :root{--blue:#1a56db;--blue-dark:#1e429f;--blue-light:#e8f0fe;--green:#057a55;--green-light:#def7ec;--amber:#b45309;--amber-light:#fef3c7;--red:#c81e1e;--red-light:#fde8e8;--g50:#f9fafb;--g100:#f3f4f6;--g200:#e5e7eb;--g400:#9ca3af;--g600:#4b5563;--g900:#111827;--r:16px;--rsm:10px;--shadow:0 2px 12px rgba(0,0,0,0.08)}
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  html,body{height:100%;background:#eef2ff;font-family:'Noto Sans KR',sans-serif}
-  .app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+  html,body{height:100%;background:#eef2ff;font-family:"Noto Sans KR",sans-serif}
+  .app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;padding-bottom:64px}
   .header{background:linear-gradient(135deg,var(--blue),var(--blue-dark));padding:48px 20px 28px;color:#fff}
   .header-inner{display:flex;align-items:center;gap:14px}
   .logo-circle{width:52px;height:52px;border-radius:16px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
-  .app-title{font-size:24px;font-weight:900;letter-spacing:-0.5px}
+  .app-title{font-size:24px;font-weight:900;letter-spacing:-.5px}
   .app-sub{font-size:13px;opacity:.8;margin-top:3px}
   .content{flex:1;padding:20px 16px 32px}
+  .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:1px solid var(--g200);display:flex;z-index:200;box-shadow:0 -2px 12px rgba(0,0,0,0.08)}
+  .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 0;font-size:11px;font-weight:700;color:var(--g400);border:none;background:none;cursor:pointer;font-family:inherit;transition:color .15s}
+  .nav-btn .nav-icon{font-size:22px}
+  .nav-btn.active{color:var(--blue)}
+  .page{display:none}
+  .page.active{display:block}
   .search-card{background:#fff;border-radius:var(--r);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
-  .field-label{font-size:12px;font-weight:700;color:var(--g600);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:5px}
+  .field-label{font-size:12px;font-weight:700;color:var(--g600);letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;gap:5px}
   .input-wrap{position:relative;margin-bottom:12px}
   .address-input{width:100%;padding:13px 40px 13px 16px;font-size:15px;border:1.5px solid var(--g200);border-radius:var(--rsm);background:var(--g50);color:var(--g900);font-family:inherit;outline:none;transition:border-color .2s}
   .address-input:focus{border-color:var(--blue);background:#fff}
@@ -59,7 +57,7 @@
   .result-row{display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid var(--g100)}
   .result-row:last-child{border-bottom:none}
   .row-icon{width:42px;height:42px;border-radius:12px;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-  .row-label{font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px}
+  .row-label{font-size:11px;font-weight:700;color:var(--g400);letter-spacing:.4px;margin-bottom:3px}
   .row-value{font-size:17px;font-weight:700;color:var(--g900)}
   .phone-link{font-size:20px;font-weight:900;color:var(--blue);text-decoration:none;display:flex;align-items:center;gap:10px}
   .call-tag{font-size:11px;font-weight:700;background:var(--blue-light);color:var(--blue);padding:3px 8px;border-radius:6px}
@@ -77,212 +75,153 @@
   @keyframes spin{to{transform:rotate(360deg)}}
   .offline-banner{background:#fef3c7;border:1px solid #d97706;border-radius:10px;padding:10px 14px;font-size:12px;color:#92400e;margin-bottom:12px;display:none;text-align:center}
   .notice{text-align:center;font-size:12px;color:var(--g400);margin-top:20px}
+  .complaint-card{background:#fff;border-radius:var(--r);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+  .complaint-card h3{font-size:15px;font-weight:700;color:var(--g900);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+  .photo-area{border:2px dashed var(--g200);border-radius:var(--rsm);padding:24px 16px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:14px;position:relative;overflow:hidden;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .photo-area:active{border-color:var(--blue);background:var(--blue-light)}
+  .photo-area.has-photo{border-style:solid;border-color:var(--blue);padding:0;display:block}
+  .photo-area img{width:100%;max-height:220px;object-fit:cover;border-radius:calc(var(--rsm) - 2px);display:block}
+  .photo-hint{font-size:13px;color:var(--g400);margin-top:8px}
+  .photo-icon{font-size:36px}
+  .photo-remove{position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.55);color:#fff;border:none;border-radius:50%;width:28px;height:28px;font-size:14px;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:10}
+  .photo-area.has-photo .photo-remove{display:flex}
+  .text-input{width:100%;padding:13px 16px;font-size:15px;border:1.5px solid var(--g200);border-radius:var(--rsm);background:var(--g50);color:var(--g900);font-family:inherit;outline:none;transition:border-color .2s;resize:none}
+  .text-input:focus{border-color:var(--blue);background:#fff}
+  .submit-btn{width:100%;padding:15px;border-radius:var(--rsm);background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;border:none;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;box-shadow:0 4px 14px rgba(220,38,38,.3);transition:opacity .15s}
+  .submit-btn:active{opacity:.85}
+  .submit-btn:disabled{opacity:.5;cursor:not-allowed}
+  .success-card{background:var(--green-light);border:1px solid var(--green);border-radius:var(--r);padding:24px 20px;text-align:center;animation:slideUp .3s ease}
+  .success-icon{font-size:48px;margin-bottom:12px}
+  .success-card h3{font-size:17px;font-weight:700;color:var(--green);margin-bottom:6px}
+  .success-card p{font-size:14px;color:#065f46;line-height:1.6}
+  .new-complaint-btn{margin-top:16px;padding:12px 24px;border-radius:var(--rsm);background:var(--green);color:#fff;border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+  .upload-progress{height:4px;background:var(--g200);border-radius:2px;margin-bottom:14px;display:none;overflow:hidden}
+  .upload-progress-bar{height:100%;background:linear-gradient(90deg,var(--blue),var(--blue-dark));border-radius:2px;transition:width .3s;width:0%}
 </style>
 </head>
 <body>
 <div class="app">
   <div class="header">
     <div class="header-inner">
-      <div class="logo-circle">♻️</div>
+      <div class="logo-circle">&#9851;&#65039;</div>
       <div>
         <div class="app-title">수거안내</div>
         <div class="app-sub">광주광역시 생활폐기물 수거 안내</div>
       </div>
     </div>
   </div>
-
   <div class="content">
-    <!-- 오프라인 안내 배너 -->
-    <div class="offline-banner" id="offlineBanner">
-      📡 인터넷 연결이 없습니다. 최신 정보를 가져올 수 없어요.
+    <div class="offline-banner" id="offlineBanner">&#128225; 인터넷 연결이 없습니다.</div>
+    <!-- 수거조회 탭 -->
+    <div class="page active" id="pageSearch">
+      <div class="search-card">
+        <div class="field-label">&#128205; 주소 입력</div>
+        <div class="input-wrap">
+          <input class="address-input" id="addrInput" type="text" placeholder="예: 광주 북구 양산동 123-45" oninput="onInput()" autocomplete="off" autocorrect="off" spellcheck="false"/>
+          <button class="clear-btn" id="clearBtn" onclick="clearInput()">&#10005;</button>
+          <div class="suggest-box" id="suggestBox"></div>
+        </div>
+        <div class="chip-row" id="chipRow">
+          <div class="chip" onclick="setAddr('광주 북구 양산동')">북구 양산동</div>
+          <div class="chip" onclick="setAddr('광주 북구 운암동')">북구 운암동</div>
+          <div class="chip" onclick="setAddr('광주 광산구 수완동')">광산구 수완동</div>
+          <div class="chip" onclick="setAddr('광주 남구 봉선동')">남구 봉선동</div>
+          <div class="chip" onclick="setAddr('광주 서구 농성동')">서구 농성동</div>
+          <div class="chip" onclick="setAddr('광주 동구 계림동')">동구 계림동</div>
+        </div>
+        <div class="field-label" style="margin-bottom:8px">쓰레기 종류</div>
+        <div class="waste-row">
+          <button class="waste-btn sel-blue" id="wb0" onclick="selWaste(0)"><span class="wicon">&#128465;&#65039;</span><span>종량제</span></button>
+          <button class="waste-btn" id="wb1" onclick="selWaste(1)"><span class="wicon">&#9851;&#65039;</span><span>재활용</span></button>
+          <button class="waste-btn" id="wb2" onclick="selWaste(2)"><span class="wicon">&#129388;</span><span>음식물</span></button>
+        </div>
+        <button class="search-btn" onclick="doSearch()">&#128269; 수거 정보 조회</button>
+      </div>
+      <div id="resultArea">
+        <div class="empty-state">
+          <div class="empty-emoji">&#128506;&#65039;</div>
+          <div class="empty-title">주소를 입력해 조회하세요</div>
+          <div class="empty-desc">광주광역시 수거 일정과<br>담당 기사 정보를 확인할 수 있습니다</div>
+        </div>
+      </div>
+      <div class="notice">광주광역시 환경관리본부 · 062-000-0000</div>
     </div>
-
-    <div class="search-card">
-      <div class="field-label">📍 주소 입력</div>
-      <div class="input-wrap">
-        <input class="address-input" id="addrInput" type="text"
-          placeholder="예: 광주 북구 양산동 123-45"
-          oninput="onInput()" autocomplete="off" autocorrect="off" spellcheck="false"/>
-        <button class="clear-btn" id="clearBtn" onclick="clearInput()">✕</button>
-        <div class="suggest-box" id="suggestBox"></div>
+    <!-- 민원신고 탭 -->
+    <div class="page" id="pageComplaint">
+      <div id="complaintForm">
+        <div class="complaint-card">
+          <h3>&#128248; 사진 첨부</h3>
+          <div class="photo-area" id="photoArea" onclick="triggerCamera()">
+            <div class="photo-icon">&#128247;</div>
+            <div class="photo-hint">탭해서 사진 촬영 또는 앨범에서 선택</div>
+            <button class="photo-remove" id="photoRemoveBtn" onclick="removePhoto(event)">&#10005;</button>
+          </div>
+          <input type="file" id="fileInput" accept="image/*" capture="environment" style="display:none" onchange="onFileSelected(event)"/>
+        </div>
+        <div class="complaint-card">
+          <h3>&#128221; 민원 내용</h3>
+          <div class="field-label">주소 (선택)</div>
+          <input class="text-input" id="cmpAddr" type="text" placeholder="예: 광주 북구 양산동 123-45" style="margin-bottom:12px"/>
+          <div class="field-label">민원 내용 <span style="color:var(--red)">*</span></div>
+          <textarea class="text-input" id="cmpDesc" rows="4" placeholder="불법 투기, 수거 미완료, 기타 민원 내용을 입력해주세요"></textarea>
+        </div>
+        <div class="complaint-card">
+          <h3>&#128222; 연락처 (선택)</h3>
+          <input class="text-input" id="cmpContact" type="tel" placeholder="010-0000-0000 (답변 받으실 연락처)"/>
+        </div>
+        <div class="upload-progress" id="uploadProgress">
+          <div class="upload-progress-bar" id="uploadBar"></div>
+        </div>
+        <button class="submit-btn" id="submitBtn" onclick="submitComplaint()">&#128680; 민원 신고 접수</button>
       </div>
-
-      <div class="chip-row" id="chipRow">
-        <div class="chip" onclick="setAddr('광주 북구 양산동')">북구 양산동</div>
-        <div class="chip" onclick="setAddr('광주 북구 운암동')">북구 운암동</div>
-        <div class="chip" onclick="setAddr('광주 광산구 수완동')">광산구 수완동</div>
-        <div class="chip" onclick="setAddr('광주 남구 봉선동')">남구 봉선동</div>
-        <div class="chip" onclick="setAddr('광주 서구 농성동')">서구 농성동</div>
-        <div class="chip" onclick="setAddr('광주 동구 계림동')">동구 계림동</div>
-      </div>
-
-      <div class="field-label" style="margin-bottom:8px">쓰레기 종류</div>
-      <div class="waste-row">
-        <button class="waste-btn sel-blue" id="wb0" onclick="selWaste(0)">
-          <span class="wicon">🗑️</span><span>종량제</span>
-        </button>
-        <button class="waste-btn" id="wb1" onclick="selWaste(1)">
-          <span class="wicon">♻️</span><span>재활용</span>
-        </button>
-        <button class="waste-btn" id="wb2" onclick="selWaste(2)">
-          <span class="wicon">🥬</span><span>음식물</span>
-        </button>
-      </div>
-      <button class="search-btn" onclick="doSearch()">🔍 수거 정보 조회</button>
-    </div>
-
-    <div id="resultArea">
-      <div class="empty-state">
-        <div class="empty-emoji">🗺️</div>
-        <div class="empty-title">주소를 입력해 조회하세요</div>
-        <div class="empty-desc">광주광역시 수거 일정과<br>담당 기사 정보를 확인할 수 있습니다</div>
+      <div id="complaintSuccess" style="display:none">
+        <div class="success-card">
+          <div class="success-icon">&#9989;</div>
+          <h3>민원이 접수되었습니다!</h3>
+          <p>담당 부서에서 확인 후 처리해 드립니다.<br>처리 현황은 062-000-0000으로 문의하세요.</p>
+          <button class="new-complaint-btn" onclick="resetComplaint()">새 민원 신고</button>
+        </div>
       </div>
     </div>
-    <div class="notice">광주광역시 환경관리본부 · 062-000-0000</div>
   </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn active" id="navSearch" onclick="switchTab('search')">
+      <span class="nav-icon">&#128269;</span><span>수거조회</span>
+    </button>
+    <button class="nav-btn" id="navComplaint" onclick="switchTab('complaint')">
+      <span class="nav-icon">&#128248;</span><span>민원신고</span>
+    </button>
+  </nav>
 </div>
-
 <script>
-// ★ Render에 배포된 서버 주소로 교체하세요
-// 예: "https://waste-collection.onrender.com"
-const API_BASE = "https://waste-collection.onrender.com";
-
-const WASTE_TYPES  = ["종량제","재활용","음식물"];
-const WASTE_CLS    = ["sel-blue","sel-green","sel-amber"];
-const WASTE_ICONS  = ["🗑️","♻️","🥬"];
-const WASTE_BADGES = ["badge-blue","badge-green","badge-amber"];
-let selIdx = 0;
-let debounceTimer = null;
-
-// 오프라인 감지
-window.addEventListener('offline', () => document.getElementById('offlineBanner').style.display = 'block');
-window.addEventListener('online',  () => document.getElementById('offlineBanner').style.display = 'none');
-
-function selWaste(i) {
-  document.getElementById('wb'+selIdx).className = 'waste-btn';
-  selIdx = i;
-  document.getElementById('wb'+i).className = 'waste-btn ' + WASTE_CLS[i];
+const API_BASE="https://waste-collection.onrender.com";
+const SUPABASE_URL="https://oqsexiqbddiibtasrdfw.supabase.co";
+const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xc2V4aXFiZGRpaWJ0YXNyZGZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2OTM1OTIsImV4cCI6MjA5MjI2OTU5Mn0.xrtF98pxPDLf86xA7FPbioyuLl0eEHNShnVjdgUGBaQ";
+const WASTE_TYPES=["종량제","재활용","음식물"];
+const WASTE_CLS=["sel-blue","sel-green","sel-amber"];
+const WASTE_ICONS=["🗑️","♻️","🥬"];
+const WASTE_BADGES=["badge-blue","badge-green","badge-amber"];
+let selIdx=0,debounceTimer=null,selectedFile=null;
+window.addEventListener("offline",()=>document.getElementById("offlineBanner").style.display="block");
+window.addEventListener("online",()=>document.getElementById("offlineBanner").style.display="none");
+function switchTab(tab){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+  if(tab==="search"){document.getElementById("pageSearch").classList.add("active");document.getElementById("navSearch").classList.add("active");}
+  else{document.getElementById("pageComplaint").classList.add("active");document.getElementById("navComplaint").classList.add("active");}
 }
-
-function setAddr(v) {
-  document.getElementById('addrInput').value = v;
-  document.getElementById('suggestBox').classList.remove('open');
-  document.getElementById('clearBtn').classList.add('show');
-  document.getElementById('chipRow').style.display = 'none';
-}
-
-function clearInput() {
-  document.getElementById('addrInput').value = '';
-  document.getElementById('clearBtn').classList.remove('show');
-  document.getElementById('suggestBox').classList.remove('open');
-  document.getElementById('chipRow').style.display = 'flex';
-  document.getElementById('resultArea').innerHTML = `
-    <div class="empty-state">
-      <div class="empty-emoji">🗺️</div>
-      <div class="empty-title">주소를 입력해 조회하세요</div>
-      <div class="empty-desc">광주광역시 수거 일정과<br>담당 기사 정보를 확인할 수 있습니다</div>
-    </div>`;
-  document.getElementById('addrInput').focus();
-}
-
-// 자동완성 (300ms 디바운스)
-function onInput() {
-  const val = document.getElementById('addrInput').value;
-  document.getElementById('clearBtn').classList.toggle('show', val.length > 0);
-  document.getElementById('chipRow').style.display = val.length > 0 ? 'none' : 'flex';
-
-  clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(async () => {
-    const q = val.trim();
-    const box = document.getElementById('suggestBox');
-    if (q.length < 2) { box.classList.remove('open'); return; }
-    try {
-      const res = await fetch(`${API_BASE}/autocomplete?q=${encodeURIComponent(q)}`);
-      const data = await res.json();
-      const hits = data.suggestions || [];
-      if (!hits.length) { box.classList.remove('open'); return; }
-      box.innerHTML = hits.map(r =>
-        `<div class="suggest-item" onmousedown="setAddr('${r}')">📍 ${r}</div>`
-      ).join('');
-      box.classList.add('open');
-    } catch(e) { box.classList.remove('open'); }
-  }, 300);
-}
-
-document.getElementById('addrInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') { document.getElementById('suggestBox').classList.remove('open'); doSearch(); }
-});
-
-// 조회
-async function doSearch() {
-  document.getElementById('suggestBox').classList.remove('open');
-  const addr = document.getElementById('addrInput').value.trim();
-  if (!addr) {
-    document.getElementById('addrInput').style.borderColor = '#c81e1e';
-    setTimeout(() => document.getElementById('addrInput').style.borderColor = '', 1500);
-    return;
-  }
-
-  const area = document.getElementById('resultArea');
-  area.innerHTML = `<div class="loading"><div class="spinner"></div><span style="color:#4b5563;font-size:14px">조회 중...</span></div>`;
-
-  try {
-    const res = await fetch(`${API_BASE}/lookup`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({address: addr, waste_type: WASTE_TYPES[selIdx]})
-    });
-    const data = await res.json();
-
-    if (!res.ok) {
-      const showCall = res.status === 404;
-      area.innerHTML = `
-        <div class="error-card">
-          <div style="font-size:22px">⚠️</div>
-          <div>
-            <div class="error-title">${res.status === 400 ? '주소 인식 불가' : '수거 정보 없음'}</div>
-            <div class="error-msg">${data.detail}</div>
-            ${showCall ? `<a class="call-dept" href="tel:062-000-0000">📞 담당부서 연결</a>` : ''}
-          </div>
-        </div>`;
-      return;
-    }
-
-    area.innerHTML = `
-      <div class="result-card">
-        <div class="result-header">
-          <span class="waste-badge ${WASTE_BADGES[selIdx]}">${WASTE_ICONS[selIdx]} ${data.waste_type} 수거</span>
-          <span class="result-region">📍 ${data.region}</span>
-        </div>
-        <div class="result-row">
-          <div class="row-icon">📅</div>
-          <div><div class="row-label">수거 요일</div><div class="row-value">${data.collection_day}</div></div>
-        </div>
-        <div class="result-row">
-          <div class="row-icon">👷</div>
-          <div><div class="row-label">담당 기사</div><div class="row-value">${data.driver_name}</div></div>
-        </div>
-        <div class="result-row">
-          <div class="row-icon">📞</div>
-          <div>
-            <div class="row-label">연락처</div>
-            <a class="phone-link" href="tel:${data.phone}">${data.phone} <span class="call-tag">📲 전화</span></a>
-          </div>
-        </div>
-        <div class="result-footer">💡 수거 당일 오전 6시 이전에 배출해 주세요</div>
-      </div>`;
-
-  } catch(e) {
-    area.innerHTML = `
-      <div class="error-card">
-        <div style="font-size:22px">📡</div>
-        <div>
-          <div class="error-title">서버 연결 실패</div>
-          <div class="error-msg">인터넷 연결을 확인하거나 잠시 후 다시 시도해주세요.</div>
-        </div>
-      </div>`;
-  }
-}
+function selWaste(i){document.getElementById("wb"+selIdx).className="waste-btn";selIdx=i;document.getElementById("wb"+i).className="waste-btn "+WASTE_CLS[i];}
+function setAddr(v){document.getElementById("addrInput").value=v;document.getElementById("suggestBox").classList.remove("open");document.getElementById("clearBtn").classList.add("show");document.getElementById("chipRow").style.display="none";}
+function clearInput(){document.getElementById("addrInput").value="";document.getElementById("clearBtn").classList.remove("show");document.getElementById("suggestBox").classList.remove("open");document.getElementById("chipRow").style.display="flex";document.getElementById("resultArea").innerHTML='<div class="empty-state"><div class="empty-emoji">🗺️</div><div class="empty-title">주소를 입력해 조회하세요</div><div class="empty-desc">광주광역시 수거 일정과<br>담당 기사 정보를 확인할 수 있습니다</div></div>';document.getElementById("addrInput").focus();}
+function onInput(){const val=document.getElementById("addrInput").value;document.getElementById("clearBtn").classList.toggle("show",val.length>0);document.getElementById("chipRow").style.display=val.length>0?"none":"flex";clearTimeout(debounceTimer);debounceTimer=setTimeout(async()=>{const q=val.trim();const box=document.getElementById("suggestBox");if(q.length<2){box.classList.remove("open");return;}try{const res=await fetch(`${API_BASE}/autocomplete?q=${encodeURIComponent(q)}`);const data=await res.json();const hits=data.suggestions||[];if(!hits.length){box.classList.remove("open");return;}box.innerHTML=hits.map(r=>`<div class="suggest-item" onmousedown="setAddr('${r}')">📍 ${r}</div>`).join("");box.classList.add("open");}catch(e){box.classList.remove("open");}},300);}
+document.getElementById("addrInput").addEventListener("keydown",e=>{if(e.key==="Enter"){document.getElementById("suggestBox").classList.remove("open");doSearch();}});
+async function doSearch(){document.getElementById("suggestBox").classList.remove("open");const addr=document.getElementById("addrInput").value.trim();if(!addr){document.getElementById("addrInput").style.borderColor="#c81e1e";setTimeout(()=>document.getElementById("addrInput").style.borderColor="",1500);return;}const area=document.getElementById("resultArea");area.innerHTML='<div class="loading"><div class="spinner"></div><span style="color:#4b5563;font-size:14px">조회 중...</span></div>';try{const res=await fetch(`${API_BASE}/lookup`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({address:addr,waste_type:WASTE_TYPES[selIdx]})});const data=await res.json();if(!res.ok){area.innerHTML=`<div class="error-card"><div style="font-size:22px">⚠️</div><div><div class="error-title">${res.status===400?"주소 인식 불가":"수거 정보 없음"}</div><div class="error-msg">${data.detail}</div>${res.status===404?'<a class="call-dept" href="tel:062-000-0000">📞 담당부서 연결</a>':"" }</div></div>`;return;}area.innerHTML=`<div class="result-card"><div class="result-header"><span class="waste-badge ${WASTE_BADGES[selIdx]}">${WASTE_ICONS[selIdx]} ${data.waste_type} 수거</span><span class="result-region">📍 ${data.region}</span></div><div class="result-row"><div class="row-icon">📅</div><div><div class="row-label">수거 요일</div><div class="row-value">${data.collection_day}</div></div></div><div class="result-row"><div class="row-icon">👷</div><div><div class="row-label">담당 기사</div><div class="row-value">${data.driver_name}</div></div></div><div class="result-row"><div class="row-icon">📞</div><div><div class="row-label">연락처</div><a class="phone-link" href="tel:${data.phone}">${data.phone} <span class="call-tag">📲 전화</span></a></div></div><div class="result-footer">💡 수거 당일 오전 6시 이전에 배출해 주세요</div></div>`;}catch(e){area.innerHTML='<div class="error-card"><div style="font-size:22px">📡</div><div><div class="error-title">서버 연결 실패</div><div class="error-msg">인터넷 연결을 확인하거나 잠시 후 다시 시도해주세요.</div></div></div>';}}
+function triggerCamera(){document.getElementById("fileInput").click();}
+function onFileSelected(e){const file=e.target.files[0];if(!file)return;selectedFile=file;const reader=new FileReader();reader.onload=(ev)=>{const area=document.getElementById("photoArea");area.classList.add("has-photo");area.innerHTML=`<img src="${ev.target.result}" alt="첨부사진"/><button class="photo-remove" style="display:flex" onclick="removePhoto(event)">✕</button>`;};reader.readAsDataURL(file);}
+function removePhoto(e){if(e&&e.stopPropagation)e.stopPropagation();selectedFile=null;const area=document.getElementById("photoArea");area.classList.remove("has-photo");area.innerHTML='<div class="photo-icon">📷</div><div class="photo-hint">탭해서 사진 촬영 또는 앨범에서 선택</div>';document.getElementById("fileInput").value="";}
+function setProgress(pct){document.getElementById("uploadProgress").style.display=pct>0?"block":"none";document.getElementById("uploadBar").style.width=pct+"%";}
+async function submitComplaint(){const desc=document.getElementById("cmpDesc").value.trim();if(!desc){document.getElementById("cmpDesc").style.borderColor="#c81e1e";setTimeout(()=>document.getElementById("cmpDesc").style.borderColor="",1500);alert("민원 내용을 입력해주세요.");return;}const btn=document.getElementById("submitBtn");btn.disabled=true;btn.textContent="접수 중...";setProgress(20);let photoUrl=null;try{if(selectedFile){const ext=selectedFile.name.split(".").pop()||"jpg";const fileName=`complaint_${Date.now()}.${ext}`;setProgress(40);const uploadRes=await fetch(`${SUPABASE_URL}/storage/v1/object/complaint-photos/${fileName}`,{method:"POST",headers:{"Authorization":`Bearer ${SUPABASE_KEY}`,"Content-Type":selectedFile.type,"x-upsert":"true"},body:selectedFile});if(uploadRes.ok)photoUrl=`${SUPABASE_URL}/storage/v1/object/public/complaint-photos/${fileName}`;}setProgress(70);const payload={region:document.getElementById("cmpAddr").value.trim()||null,description:desc,photo_url:photoUrl,contact:document.getElementById("cmpContact").value.trim()||null,status:"접수"};const dbRes=await fetch(`${SUPABASE_URL}/rest/v1/complaints`,{method:"POST",headers:{"apikey":SUPABASE_KEY,"Authorization":`Bearer ${SUPABASE_KEY}`,"Content-Type":"application/json","Prefer":"return=minimal"},body:JSON.stringify(payload)});setProgress(100);if(dbRes.ok||dbRes.status===201){setTimeout(()=>{setProgress(0);document.getElementById("complaintForm").style.display="none";document.getElementById("complaintSuccess").style.display="block";},400);}else{throw new Error("DB 저장 실패");}}catch(err){setProgress(0);btn.disabled=false;btn.innerHTML="🚨 민원 신고 접수";alert("접수 중 오류가 발생했습니다. 다시 시도해주세요.");}}
+function resetComplaint(){selectedFile=null;document.getElementById("cmpAddr").value="";document.getElementById("cmpDesc").value="";document.getElementById("cmpContact").value="";document.getElementById("fileInput").value="";removePhoto(null);document.getElementById("submitBtn").disabled=false;document.getElementById("submitBtn").innerHTML="🚨 민원 신고 접수";document.getElementById("complaintForm").style.display="block";document.getElementById("complaintSuccess").style.display="none";}
 </script>
 </body>
 </html>
