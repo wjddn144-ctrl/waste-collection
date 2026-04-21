@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>수거안내</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --blue:#1a56db; --blue-dark:#1e429f; --blue-light:#e8f0fe;
+    --green:#057a55; --green-light:#def7ec;
+    --amber:#b45309; --amber-light:#fef3c7;
+    --red:#c81e1e; --red-light:#fde8e8;
+    --g50:#f9fafb; --g100:#f3f4f6; --g200:#e5e7eb;
+    --g400:#9ca3af; --g600:#4b5563; --g900:#111827;
+    --r:16px; --rsm:10px; --shadow:0 2px 12px rgba(0,0,0,0.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;background:#eef2ff;font-family:'Noto Sans KR',sans-serif}
+  .app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+  .header{background:linear-gradient(135deg,var(--blue),var(--blue-dark));padding:48px 20px 28px;color:#fff}
+  .header-inner{display:flex;align-items:center;gap:14px}
+  .logo-circle{width:52px;height:52px;border-radius:16px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+  .app-title{font-size:24px;font-weight:900;letter-spacing:-0.5px}
+  .app-sub{font-size:13px;opacity:.8;margin-top:3px}
+  .content{flex:1;padding:20px 16px 32px}
+  .search-card{background:#fff;border-radius:var(--r);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+  .field-label{font-size:12px;font-weight:700;color:var(--g600);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:5px}
+  .input-wrap{position:relative;margin-bottom:12px}
+  .address-input{width:100%;padding:13px 40px 13px 16px;font-size:15px;border:1.5px solid var(--g200);border-radius:var(--rsm);background:var(--g50);color:var(--g900);font-family:inherit;outline:none;transition:border-color .2s}
+  .address-input:focus{border-color:var(--blue);background:#fff}
+  .clear-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:var(--g200);border:none;border-radius:50%;width:22px;height:22px;font-size:11px;cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--g600)}
+  .clear-btn.show{display:flex}
+  .suggest-box{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1.5px solid var(--g200);border-radius:var(--rsm);box-shadow:var(--shadow);z-index:100;display:none;overflow:hidden}
+  .suggest-box.open{display:block}
+  .suggest-item{padding:12px 16px;font-size:14px;color:var(--g900);display:flex;align-items:center;gap:10px;cursor:pointer;border-bottom:1px solid var(--g100)}
+  .suggest-item:last-child{border-bottom:none}
+  .suggest-item:active{background:var(--g50)}
+  .chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+  .chip{padding:6px 12px;background:#fff;border:1px solid var(--g200);border-radius:20px;font-size:12px;color:var(--g600);cursor:pointer;transition:all .15s}
+  .chip:active{background:var(--blue-light);border-color:var(--blue);color:var(--blue)}
+  .waste-row{display:flex;gap:10px;margin-bottom:16px}
+  .waste-btn{flex:1;border:1.5px solid var(--g200);border-radius:var(--rsm);padding:12px 6px;background:var(--g50);display:flex;flex-direction:column;align-items:center;gap:5px;font-size:13px;font-weight:500;color:var(--g600);cursor:pointer;transition:all .15s;font-family:inherit}
+  .waste-btn .wicon{font-size:22px}
+  .waste-btn.sel-blue{border-color:var(--blue);background:var(--blue-light);color:var(--blue)}
+  .waste-btn.sel-green{border-color:var(--green);background:var(--green-light);color:var(--green)}
+  .waste-btn.sel-amber{border-color:var(--amber);background:var(--amber-light);color:var(--amber)}
+  .waste-btn:active{transform:scale(0.96)}
+  .search-btn{width:100%;padding:15px;border-radius:var(--rsm);background:linear-gradient(135deg,var(--blue),var(--blue-dark));color:#fff;border:none;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;box-shadow:0 4px 14px rgba(26,86,219,.35);transition:opacity .15s}
+  .search-btn:active{opacity:.85}
+  .result-card{background:#fff;border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;animation:slideUp .3s ease}
+  @keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  .result-header{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--g100);flex-wrap:wrap;gap:8px}
+  .waste-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;font-size:13px;font-weight:700}
+  .badge-blue{background:var(--blue-light);color:var(--blue)}
+  .badge-green{background:var(--green-light);color:var(--green)}
+  .badge-amber{background:var(--amber-light);color:var(--amber)}
+  .result-region{font-size:13px;color:var(--g600)}
+  .result-row{display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid var(--g100)}
+  .result-row:last-child{border-bottom:none}
+  .row-icon{width:42px;height:42px;border-radius:12px;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+  .row-label{font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px}
+  .row-value{font-size:17px;font-weight:700;color:var(--g900)}
+  .phone-link{font-size:20px;font-weight:900;color:var(--blue);text-decoration:none;display:flex;align-items:center;gap:10px}
+  .call-tag{font-size:11px;font-weight:700;background:var(--blue-light);color:var(--blue);padding:3px 8px;border-radius:6px}
+  .result-footer{padding:12px 20px;background:var(--g50);font-size:12px;color:var(--g600);text-align:center;border-top:1px solid var(--g100)}
+  .error-card{background:var(--red-light);border-radius:var(--r);padding:18px 20px;display:flex;gap:12px;align-items:flex-start;animation:slideUp .3s ease}
+  .error-title{font-size:14px;font-weight:700;color:var(--red);margin-bottom:5px}
+  .error-msg{font-size:13px;color:#7f1d1d;line-height:1.6}
+  .call-dept{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:8px 14px;background:var(--red);color:#fff;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none}
+  .empty-state{text-align:center;padding:40px 20px}
+  .empty-emoji{font-size:56px;margin-bottom:16px}
+  .empty-title{font-size:17px;font-weight:700;color:var(--g900);margin-bottom:8px}
+  .empty-desc{font-size:14px;color:var(--g600);line-height:1.7}
+  .loading{display:flex;align-items:center;justify-content:center;gap:10px;padding:32px}
+  .spinner{width:24px;height:24px;border-radius:50%;border:3px solid var(--blue-light);border-top-color:var(--blue);animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .offline-banner{background:#fef3c7;border:1px solid #d97706;border-radius:10px;padding:10px 14px;font-size:12px;color:#92400e;margin-bottom:12px;display:none;text-align:center}
+  .notice{text-align:center;font-size:12px;color:var(--g400);margin-top:20px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="header-inner">
+      <div class="logo-circle">♻️</div>
+      <div>
+        <div class="app-title">수거안내</div>
+        <div class="app-sub">광주광역시 생활폐기물 수거 안내</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- 오프라인 안내 배너 -->
+    <div class="offline-banner" id="offlineBanner">
+      📡 인터넷 연결이 없습니다. 최신 정보를 가져올 수 없어요.
+    </div>
+
+    <div class="search-card">
+      <div class="field-label">📍 주소 입력</div>
+      <div class="input-wrap">
+        <input class="address-input" id="addrInput" type="text"
+          placeholder="예: 광주 북구 양산동 123-45"
+          oninput="onInput()" autocomplete="off" autocorrect="off" spellcheck="false"/>
+        <button class="clear-btn" id="clearBtn" onclick="clearInput()">✕</button>
+        <div class="suggest-box" id="suggestBox"></div>
+      </div>
+
+      <div class="chip-row" id="chipRow">
+        <div class="chip" onclick="setAddr('광주 북구 양산동')">북구 양산동</div>
+        <div class="chip" onclick="setAddr('광주 북구 운암동')">북구 운암동</div>
+        <div class="chip" onclick="setAddr('광주 광산구 수완동')">광산구 수완동</div>
+        <div class="chip" onclick="setAddr('광주 남구 봉선동')">남구 봉선동</div>
+        <div class="chip" onclick="setAddr('광주 서구 농성동')">서구 농성동</div>
+        <div class="chip" onclick="setAddr('광주 동구 계림동')">동구 계림동</div>
+      </div>
+
+      <div class="field-label" style="margin-bottom:8px">쓰레기 종류</div>
+      <div class="waste-row">
+        <button class="waste-btn sel-blue" id="wb0" onclick="selWaste(0)">
+          <span class="wicon">🗑️</span><span>종량제</span>
+        </button>
+        <button class="waste-btn" id="wb1" onclick="selWaste(1)">
+          <span class="wicon">♻️</span><span>재활용</span>
+        </button>
+        <button class="waste-btn" id="wb2" onclick="selWaste(2)">
+          <span class="wicon">🥬</span><span>음식물</span>
+        </button>
+      </div>
+      <button class="search-btn" onclick="doSearch()">🔍 수거 정보 조회</button>
+    </div>
+
+    <div id="resultArea">
+      <div class="empty-state">
+        <div class="empty-emoji">🗺️</div>
+        <div class="empty-title">주소를 입력해 조회하세요</div>
+        <div class="empty-desc">광주광역시 수거 일정과<br>담당 기사 정보를 확인할 수 있습니다</div>
+      </div>
+    </div>
+    <div class="notice">광주광역시 환경관리본부 · 062-000-0000</div>
+  </div>
+</div>
+
+<script>
+// ★ Render에 배포된 서버 주소로 교체하세요
+// 예: "https://waste-collection.onrender.com"
+const API_BASE = "https://YOUR-APP-NAME.onrender.com";
+
+const WASTE_TYPES  = ["종량제","재활용","음식물"];
+const WASTE_CLS    = ["sel-blue","sel-green","sel-amber"];
+const WASTE_ICONS  = ["🗑️","♻️","🥬"];
+const WASTE_BADGES = ["badge-blue","badge-green","badge-amber"];
+let selIdx = 0;
+let debounceTimer = null;
+
+// 오프라인 감지
+window.addEventListener('offline', () => document.getElementById('offlineBanner').style.display = 'block');
+window.addEventListener('online',  () => document.getElementById('offlineBanner').style.display = 'none');
+
+function selWaste(i) {
+  document.getElementById('wb'+selIdx).className = 'waste-btn';
+  selIdx = i;
+  document.getElementById('wb'+i).className = 'waste-btn ' + WASTE_CLS[i];
+}
+
+function setAddr(v) {
+  document.getElementById('addrInput').value = v;
+  document.getElementById('suggestBox').classList.remove('open');
+  document.getElementById('clearBtn').classList.add('show');
+  document.getElementById('chipRow').style.display = 'none';
+}
+
+function clearInput() {
+  document.getElementById('addrInput').value = '';
+  document.getElementById('clearBtn').classList.remove('show');
+  document.getElementById('suggestBox').classList.remove('open');
+  document.getElementById('chipRow').style.display = 'flex';
+  document.getElementById('resultArea').innerHTML = `
+    <div class="empty-state">
+      <div class="empty-emoji">🗺️</div>
+      <div class="empty-title">주소를 입력해 조회하세요</div>
+      <div class="empty-desc">광주광역시 수거 일정과<br>담당 기사 정보를 확인할 수 있습니다</div>
+    </div>`;
+  document.getElementById('addrInput').focus();
+}
+
+// 자동완성 (300ms 디바운스)
+function onInput() {
+  const val = document.getElementById('addrInput').value;
+  document.getElementById('clearBtn').classList.toggle('show', val.length > 0);
+  document.getElementById('chipRow').style.display = val.length > 0 ? 'none' : 'flex';
+
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(async () => {
+    const q = val.trim();
+    const box = document.getElementById('suggestBox');
+    if (q.length < 2) { box.classList.remove('open'); return; }
+    try {
+      const res = await fetch(`${API_BASE}/autocomplete?q=${encodeURIComponent(q)}`);
+      const data = await res.json();
+      const hits = data.suggestions || [];
+      if (!hits.length) { box.classList.remove('open'); return; }
+      box.innerHTML = hits.map(r =>
+        `<div class="suggest-item" onmousedown="setAddr('${r}')">📍 ${r}</div>`
+      ).join('');
+      box.classList.add('open');
+    } catch(e) { box.classList.remove('open'); }
+  }, 300);
+}
+
+document.getElementById('addrInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { document.getElementById('suggestBox').classList.remove('open'); doSearch(); }
+});
+
+// 조회
+async function doSearch() {
+  document.getElementById('suggestBox').classList.remove('open');
+  const addr = document.getElementById('addrInput').value.trim();
+  if (!addr) {
+    document.getElementById('addrInput').style.borderColor = '#c81e1e';
+    setTimeout(() => document.getElementById('addrInput').style.borderColor = '', 1500);
+    return;
+  }
+
+  const area = document.getElementById('resultArea');
+  area.innerHTML = `<div class="loading"><div class="spinner"></div><span style="color:#4b5563;font-size:14px">조회 중...</span></div>`;
+
+  try {
+    const res = await fetch(`${API_BASE}/lookup`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({address: addr, waste_type: WASTE_TYPES[selIdx]})
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      const showCall = res.status === 404;
+      area.innerHTML = `
+        <div class="error-card">
+          <div style="font-size:22px">⚠️</div>
+          <div>
+            <div class="error-title">${res.status === 400 ? '주소 인식 불가' : '수거 정보 없음'}</div>
+            <div class="error-msg">${data.detail}</div>
+            ${showCall ? `<a class="call-dept" href="tel:062-000-0000">📞 담당부서 연결</a>` : ''}
+          </div>
+        </div>`;
+      return;
+    }
+
+    area.innerHTML = `
+      <div class="result-card">
+        <div class="result-header">
+          <span class="waste-badge ${WASTE_BADGES[selIdx]}">${WASTE_ICONS[selIdx]} ${data.waste_type} 수거</span>
+          <span class="result-region">📍 ${data.region}</span>
+        </div>
+        <div class="result-row">
+          <div class="row-icon">📅</div>
+          <div><div class="row-label">수거 요일</div><div class="row-value">${data.collection_day}</div></div>
+        </div>
+        <div class="result-row">
+          <div class="row-icon">👷</div>
+          <div><div class="row-label">담당 기사</div><div class="row-value">${data.driver_name}</div></div>
+        </div>
+        <div class="result-row">
+          <div class="row-icon">📞</div>
+          <div>
+            <div class="row-label">연락처</div>
+            <a class="phone-link" href="tel:${data.phone}">${data.phone} <span class="call-tag">📲 전화</span></a>
+          </div>
+        </div>
+        <div class="result-footer">💡 수거 당일 오전 6시 이전에 배출해 주세요</div>
+      </div>`;
+
+  } catch(e) {
+    area.innerHTML = `
+      <div class="error-card">
+        <div style="font-size:22px">📡</div>
+        <div>
+          <div class="error-title">서버 연결 실패</div>
+          <div class="error-msg">인터넷 연결을 확인하거나 잠시 후 다시 시도해주세요.</div>
+        </div>
+      </div>`;
+  }
+}
+</script>
+</body>
+</html>
