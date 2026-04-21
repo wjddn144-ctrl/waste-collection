@@ -5,7 +5,7 @@ import os
 import re
 from supabase import create_client, Client
 
-app = FastAPI(title="수거안내 API", version="2.0.0")
+app = FastAPI(title="수거안내 API", version="3.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -14,38 +14,32 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ── Supabase 연결 ─────────────────────────────────────────────────
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "")
 
 def get_supabase() -> Client:
     return create_client(SUPABASE_URL, SUPABASE_KEY)
 
-
-# ── Models ────────────────────────────────────────────────────────
 class LookupRequest(BaseModel):
     address: str
     waste_type: str
 
-
-# ── 주소 파서 ─────────────────────────────────────────────────────
-def parse_region(address: str):
+def parse_dong(address: str):
+    """주소에서 동 이름만 추출 (구 없어도 됨)"""
     address = address.strip()
     bad = ["서울","부산","대구","인천","대전","울산","세종","수원","창원"]
     for c in bad:
         if c in address:
             return None
-    gu = re.search(r"(북구|광산구|서구|남구|동구)", address)
-    dong = re.search(r"([가-힣]+동)", address)
-    if gu and dong:
-        return f"광주 {gu.group(1)} {dong.group(1)}"
+    # 동 이름 추출
+    dong = re.search(r"([가-힣]+(?:동|가|리))", address)
+    if dong:
+        return dong.group(1)
     return None
 
-
-# ── Routes ────────────────────────────────────────────────────────
 @app.get("/")
 def root():
-    return {"status": "ok", "message": "수거안내 API v2"}
+    return {"status": "ok", "message": "수거안내 API v3"}
 
 @app.get("/health")
 def health():
@@ -53,27 +47,44 @@ def health():
 
 @app.post("/lookup")
 def lookup(req: LookupRequest):
-    region = parse_region(req.address)
-    if not region:
+    dong = parse_dong(req.address)
+    if not dong:
         raise HTTPException(400, detail="주소를 인식할 수 없습니다. 예: 광주 북구 양산동 123-45")
 
+    waste_type = req.waste_type
     sb = get_supabase()
-    res = sb.table("collection_schedule") \
+
+    # zones 테이블에서 동 이름으로 검색
+    res = sb.table("zones") \
             .select("*") \
-            .eq("region", region) \
-            .eq("waste_type", req.waste_type) \
+            .ilike("address_key", f"%{dong}%") \
             .execute()
 
     if not res.data:
-        raise HTTPException(404, detail=f"'{region}' {req.waste_type} 수거 정보가 없습니다. 담당 부서(062-000-0000)에 문의해주세요.")
+        raise HTTPException(404, detail=f"'{dong}' 수거 정보가 없습니다. 담당 부서(062-000-0000)에 문의해주세요.")
 
     row = res.data[0]
+
+    # 쓰레기 종류에 따라 수거 요일 선택
+    if waste_type == "종량제":
+        day = row.get("day_general")
+    elif waste_type == "재활용":
+        day = row.get("day_recycle")
+    elif waste_type == "음식물":
+        day = row.get("day_food")
+    else:
+        day = None
+
+    if not day:
+        raise HTTPException(404, detail=f"'{dong}' {waste_type} 수거 정보가 없습니다.")
+
     return {
-        "collection_day": row["collection_day"],
-        "driver_name": row["driver_name"],
-        "phone": row["phone"],
-        "region": region,
-        "waste_type": req.waste_type,
+        "collection_day": day,
+        "driver_name": row.get("driver_name") or "담당자 미배정",
+        "phone": row.get("phone") or "062-000-0000",
+        "region": row.get("region", dong),
+        "waste_type": waste_type,
+        "zone_id": row.get("zone_id", ""),
     }
 
 @app.get("/autocomplete")
@@ -81,9 +92,9 @@ def autocomplete(q: str = ""):
     if len(q) < 2:
         return {"suggestions": []}
     sb = get_supabase()
-    res = sb.table("collection_schedule") \
-            .select("region") \
-            .ilike("region", f"%{q}%") \
+    res = sb.table("zones") \
+            .select("address_key") \
+            .ilike("address_key", f"%{q}%") \
             .execute()
-    regions = list({r["region"] for r in res.data})
-    return {"suggestions": sorted(regions)[:8]}
+    keys = list({r["address_key"] for r in res.data if r.get("address_key")})
+    return {"suggestions": sorted(keys)[:8]}
